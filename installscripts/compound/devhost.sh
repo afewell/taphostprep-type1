@@ -46,18 +46,31 @@ func_install_script () {
 
 func_clone_repo () {
     echo "##################################################" | tee - a /tmp/taphostprep.log
-    echo "# Finished Installing: $1 " | tee - a /tmp/taphostprep.log
+    echo "# Cloning Repository: $1 " | tee - a /tmp/taphostprep.log
     echo "##################################################" | tee - a /tmp/taphostprep.log
-    cd "/home/$user" || return  | tee - a /tmp/taphostprep.log
+    cd "/home/${user}" || return  | tee - a /tmp/taphostprep.log
     git clone "$1" | tee - a /tmp/taphostprep.log
+    reponame=$(echo ${1##*/}) | tee - a /tmp/taphostprep.log
+    chown -R "/home/${user}/${reponame}" | tee - a /tmp/taphostprep.log
     echo "##################################################" | tee - a /tmp/taphostprep.log
-    echo "# Finished Installing: $1 " | tee - a /tmp/taphostprep.log
+    echo "# Finished Cloning Repository: $1 " | tee - a /tmp/taphostprep.log
     echo "##################################################" | tee - a /tmp/taphostprep.log
 }
 
+# Main
 
+read -p "Refresh snap to prevent Ubuntu error? (y/n):" install
+if [ "$install" = "y" ] || [ "$install" = "Y" ]
+then
+    killall snap-store
+    snap refresh
+fi
 
-
+read -p "Install ntp? (y/n):" install
+if [ "$install" = "y" ] || [ "$install" = "Y" ]
+then
+    func_apt_install "ntp"
+fi
 
 read -p "Install curl? (y/n):" install
 if [ "$install" = "y" ] || [ "$install" = "Y" ]
@@ -88,8 +101,6 @@ if [ "$install" = "y" ] || [ "$install" = "Y" ]
 then
     func_clone_repo "https://github.com/afewell/taphostprep-type1.git"
 fi
-
-# Main
 
 read -p "Install Docker CE? (y/n):" install
 if [ "$install" = "y" ] || [ "$install" = "Y" ]
