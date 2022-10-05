@@ -1,0 +1,27 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    cert-manager.io/cluster-issuer: ca-issuer
+  labels:
+    learningcenter.tanzu.vmware.com/component: portal
+    learningcenter.tanzu.vmware.com/portal.name: learning-center-guided
+  name: learningcenter-portal
+  namespace: learning-center-guided-ui
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: learning-center-guided.learningcenter.minikube.test
+    http:
+      paths:
+      - backend:
+          service:
+            name: learningcenter-portal
+            port:
+              number: 8080
+        path: /
+        pathType: Prefix
+  tls:
+  - hosts:
+    - learning-center-guided.learningcenter.minikube.test
+    secretName: learning-center-guided-cert
