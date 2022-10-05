@@ -144,6 +144,12 @@ then
     func_install_script "dnsmasq.sh"
 fi
 
+read -p "Setup private certificate authority? (y/n):" install
+if [ "$install" = "y" ] || [ "$install" = "Y" ]
+then
+    func_install_script "certificateauthority.sh"
+fi
+
 
 
 ## The below command should be the last thing that executes
