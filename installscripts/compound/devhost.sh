@@ -1,7 +1,7 @@
 #!/bin/bash
 
 ## Copy, uncomment and enter the following commands to execute this script 
-### wget -O /tmp/devhost.sh https://raw.githubusercontent.com/afewell/scripts/main/os/ubuntu/installscripts/compound/devhost.sh
+### wget -O /tmp/devhost.sh https://raw.githubusercontent.com/afewell/taphostprep-type1/main/installscripts/compound/devhost.sh
 ### sudo chmod +x /tmp/devhost.sh 
 ### sudo /tmp/devhost.sh
 
@@ -10,105 +10,127 @@
 
 ## Global variables
 ### note that scripts executed by this script cannot gather user inputs
-read -p "Enter your exact username for this host - default value is viadmin: " user
+read -pr "Enter your exact username for this host - default value is viadmin: " user
 user=${user:-viadmin}
 echo "user value is: ${user}"
 
+## Define Functions
+### There are currently 3 forms of install command sequences used in this script
+### 1. func_apt_install updates apt and then executes apt install {installkeyword} -y
+### 2. func_install_script downloads an install script from this repo and sources it for execution from this env
+### 3. func_clone_repo clones a repo from the users home directory
 
-read -p "Install curl? (y/n):" install
+func_apt_install () {
+    echo "##################################################" | tee - a /tmp/taphostprep.log
+    echo "# Installing: $1 " | tee - a /tmp/taphostprep.log
+    echo "##################################################" | tee - a /tmp/taphostprep.log
+    apt-get update | tee - a /tmp/taphostprep.log
+    apt install "$1" -y | tee - a /tmp/taphostprep.log
+    echo "##################################################" | tee - a /tmp/taphostprep.log
+    echo "# Finished Installing: $1 " | tee - a /tmp/taphostprep.log
+    echo "##################################################" | tee - a /tmp/taphostprep.log
+}
+
+func_install_script () {
+    echo "##################################################" | tee - a /tmp/taphostprep.log
+    echo "# Installing: $1 " | tee - a /tmp/taphostprep.log
+    echo "##################################################" | tee - a /tmp/taphostprep.log
+    wget https://raw.githubusercontent.com/afewell/taphostprep-type1/main/installscripts/$1 -O /tmp/$1 | tee - a /tmp/taphostprep.log
+    chmod +x "/tmp/$1" | tee - a /tmp/taphostprep.log
+    source "/tmp/$1" | tee - a /tmp/taphostprep.log
+    rm "/tmp/$1" | tee - a /tmp/taphostprep.log
+    echo "##################################################" | tee - a /tmp/taphostprep.log
+    echo "# Finished Installing: $1 " | tee - a /tmp/taphostprep.log
+    echo "##################################################" | tee - a /tmp/taphostprep.log
+}
+
+func_clone_repo () {
+    echo "##################################################" | tee - a /tmp/taphostprep.log
+    echo "# Finished Installing: $1 " | tee - a /tmp/taphostprep.log
+    echo "##################################################" | tee - a /tmp/taphostprep.log
+    cd "/home/$user" || return  | tee - a /tmp/taphostprep.log
+    git clone "$1" | tee - a /tmp/taphostprep.log
+    echo "##################################################" | tee - a /tmp/taphostprep.log
+    echo "# Finished Installing: $1 " | tee - a /tmp/taphostprep.log
+    echo "##################################################" | tee - a /tmp/taphostprep.log
+}
+
+
+
+
+
+read -pr "Install curl? (y/n):" install
 if [ "$install" = "y" ] || [ "$install" = "Y" ]
 then
-    apt-get update
-    apt install curl -y
+    func_apt_install "curl"
 fi
 
-read -p "Install vim? (y/n):" install
+read -pr "Install vim? (y/n):" install
 if [ "$install" = "y" ] || [ "$install" = "Y" ]
 then
-    apt-get update
-    apt install vim -y
+    func_apt_install "vim"
 fi
 
-read -p "Install git? (y/n):" install
+read -pr "Install git? (y/n):" install
 if [ "$install" = "y" ] || [ "$install" = "Y" ]
 then
-    apt-get update
-    apt install git -y
+    func_apt_install "git"
 fi
 
-read -p "Clone the afewell/scripts repo? (y/n):" install
+read -pr "Install age? (y/n):" install
 if [ "$install" = "y" ] || [ "$install" = "Y" ]
 then
-    cd /home/$user
-    git clone https://github.com/afewell/scripts.git
+    func_install_script "age-v1_0_0.sh"
 fi
 
-## Install Docker
-read -p "Install Docker CE? (y/n):" install
+read -pr "Clone the afewell/taphostprep-type1 repo? (y/n):" install
 if [ "$install" = "y" ] || [ "$install" = "Y" ]
 then
-    installscriptname="dockerce.sh"
-    wget https://raw.githubusercontent.com/afewell/scripts/main/os/ubuntu/installscripts/${installscriptname} -O /tmp/${installscriptname}
-    chmod +x /tmp/${installscriptname}
-    source /tmp/${installscriptname}
-    rm /tmp/${installscriptname}
+    func_clone_repo "https://github.com/afewell/taphostprep-type1.git"
 fi
 
-read -p "Install VS Code? (y/n):" install
+# Main
+
+read -pr "Install Docker CE? (y/n):" install
 if [ "$install" = "y" ] || [ "$install" = "Y" ]
 then
-    installscriptname="vscode.sh"
-    wget https://raw.githubusercontent.com/afewell/scripts/main/os/ubuntu/installscripts/${installscriptname} -O /tmp/${installscriptname}
-    chmod +x /tmp/${installscriptname}
-    source /tmp/${installscriptname}
-    rm /tmp/${installscriptname}
+    func_install_script "dockerce.sh"
 fi
 
-read -p "Install JQ? (y/n):" install
+read -pr "Install VS Code? (y/n):" install
 if [ "$install" = "y" ] || [ "$install" = "Y" ]
 then
-    apt-get update
-    apt install jq -y
+    func_install_script "vscode.sh"
 fi
 
-read -p "Install minikube? (y/n):" install
+read -pr "Install JQ? (y/n):" install
 if [ "$install" = "y" ] || [ "$install" = "Y" ]
 then
-    installscriptname="minikube.sh"
-    wget https://raw.githubusercontent.com/afewell/scripts/main/os/ubuntu/installscripts/${installscriptname} -O /tmp/${installscriptname}
-    chmod +x /tmp/${installscriptname}
-    source /tmp/${installscriptname}
-    rm /tmp/${installscriptname}
+    func_apt_install "jq"
 fi
 
-read -p "Install kubectl 1.23.10? (y/n):" install
+read -pr "Install minikube? (y/n):" install
 if [ "$install" = "y" ] || [ "$install" = "Y" ]
 then
-    installscriptname="kubectl_1-23-10.sh"
-    wget https://raw.githubusercontent.com/afewell/scripts/main/os/ubuntu/installscripts/${installscriptname} -O /tmp/${installscriptname}
-    chmod +x /tmp/${installscriptname}
-    source /tmp/${installscriptname}
-    rm /tmp/${installscriptname}
+    func_install_script "minikube.sh"
 fi
 
-read -p "Install helm? (y/n):" install
+read -pr "Install kubectl 1.23.10? (y/n):" install
 if [ "$install" = "y" ] || [ "$install" = "Y" ]
 then
-    installscriptname="helm.sh"
-    wget https://raw.githubusercontent.com/afewell/scripts/main/os/ubuntu/installscripts/${installscriptname} -O /tmp/${installscriptname}
-    chmod +x /tmp/${installscriptname}
-    source /tmp/${installscriptname}
-    rm /tmp/${installscriptname}
+    func_install_script "kubectl_1-23-10.sh"
 fi
 
-read -p "Install dnsmasq? (y/n):" install
+read -pr "Install helm? (y/n):" install
 if [ "$install" = "y" ] || [ "$install" = "Y" ]
 then
-    installscriptname="dnsmasq.sh"
-    wget https://raw.githubusercontent.com/afewell/scripts/main/os/ubuntu/installscripts/${installscriptname} -O /tmp/${installscriptname}
-    chmod +x /tmp/${installscriptname}
-    source /tmp/${installscriptname}
-    rm /tmp/${installscriptname}
+    func_install_script "helm.sh"
+fi
+
+read -pr "Install dnsmasq? (y/n):" install
+if [ "$install" = "y" ] || [ "$install" = "Y" ]
+then
+    func_install_script "dnsmasq.sh"
 fi
 
 
