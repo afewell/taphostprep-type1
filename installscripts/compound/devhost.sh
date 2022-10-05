@@ -10,7 +10,7 @@
 
 ## Global variables
 ### note that scripts executed by this script cannot gather user inputs
-read -pr "Enter your exact username for this host - default value is viadmin: " user
+read -p "Enter your exact username for this host - default value is viadmin: " user
 user=${user:-viadmin}
 echo "user value is: ${user}"
 
@@ -59,31 +59,31 @@ func_clone_repo () {
 
 
 
-read -pr "Install curl? (y/n):" install
+read -p "Install curl? (y/n):" install
 if [ "$install" = "y" ] || [ "$install" = "Y" ]
 then
     func_apt_install "curl"
 fi
 
-read -pr "Install vim? (y/n):" install
+read -p "Install vim? (y/n):" install
 if [ "$install" = "y" ] || [ "$install" = "Y" ]
 then
     func_apt_install "vim"
 fi
 
-read -pr "Install git? (y/n):" install
+read -p "Install git? (y/n):" install
 if [ "$install" = "y" ] || [ "$install" = "Y" ]
 then
     func_apt_install "git"
 fi
 
-read -pr "Install age? (y/n):" install
+read -p "Install age? (y/n):" install
 if [ "$install" = "y" ] || [ "$install" = "Y" ]
 then
     func_install_script "age-v1_0_0.sh"
 fi
 
-read -pr "Clone the afewell/taphostprep-type1 repo? (y/n):" install
+read -p "Clone the afewell/taphostprep-type1 repo? (y/n):" install
 if [ "$install" = "y" ] || [ "$install" = "Y" ]
 then
     func_clone_repo "https://github.com/afewell/taphostprep-type1.git"
@@ -91,43 +91,43 @@ fi
 
 # Main
 
-read -pr "Install Docker CE? (y/n):" install
+read -p "Install Docker CE? (y/n):" install
 if [ "$install" = "y" ] || [ "$install" = "Y" ]
 then
     func_install_script "dockerce.sh"
 fi
 
-read -pr "Install VS Code? (y/n):" install
+read -p "Install VS Code? (y/n):" install
 if [ "$install" = "y" ] || [ "$install" = "Y" ]
 then
     func_install_script "vscode.sh"
 fi
 
-read -pr "Install JQ? (y/n):" install
+read -p "Install JQ? (y/n):" install
 if [ "$install" = "y" ] || [ "$install" = "Y" ]
 then
     func_apt_install "jq"
 fi
 
-read -pr "Install minikube? (y/n):" install
+read -p "Install minikube? (y/n):" install
 if [ "$install" = "y" ] || [ "$install" = "Y" ]
 then
     func_install_script "minikube.sh"
 fi
 
-read -pr "Install kubectl 1.23.10? (y/n):" install
+read -p "Install kubectl 1.23.10? (y/n):" install
 if [ "$install" = "y" ] || [ "$install" = "Y" ]
 then
     func_install_script "kubectl_1-23-10.sh"
 fi
 
-read -pr "Install helm? (y/n):" install
+read -p "Install helm? (y/n):" install
 if [ "$install" = "y" ] || [ "$install" = "Y" ]
 then
     func_install_script "helm.sh"
 fi
 
-read -pr "Install dnsmasq? (y/n):" install
+read -p "Install dnsmasq? (y/n):" install
 if [ "$install" = "y" ] || [ "$install" = "Y" ]
 then
     func_install_script "dnsmasq.sh"
