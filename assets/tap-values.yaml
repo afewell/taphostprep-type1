@@ -3,7 +3,7 @@ shared:
   image_registry:
     project_path: "mamburger.azurecr.io/tap"
     username: "mamburger"
-    password: "Ho+mA/CA3k+3RIPJNN9e+XxVnJdEAfha"
+    password: $PASSWORD
 
 ceip_policy_disclosed: TRUE
 
