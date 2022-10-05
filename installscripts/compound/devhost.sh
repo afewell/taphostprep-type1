@@ -5,7 +5,6 @@
 ### sudo chmod +x /tmp/devhost.sh 
 ### sudo /tmp/devhost.sh
 
-
 ## Note: if any manual steps will be required after any install script, you can append instructions to >> /tmp/postactions.txt from the install script, and these will be displayed to the user at the end of this script  
 
 ## Global variables
