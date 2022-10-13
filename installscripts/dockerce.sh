@@ -27,9 +27,11 @@ mkdir -p /etc/apt/keyrings
 ## Post install steps and sudoless for user https://docs.docker.com/engine/install/linux-postinstall/
 ### Gather username since script is usually run with sudo/root
 
+chgrp docker "$(which docker)"
+chmod g+s "$(which docker)"
 
-groupadd docker -f
-usermod -aG docker $user
+# groupadd docker -f
+# usermod -aG docker $user
 
 # sudo -u $user newgrp docker
 
