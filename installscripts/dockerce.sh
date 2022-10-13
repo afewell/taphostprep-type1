@@ -31,7 +31,7 @@ mkdir -p /etc/apt/keyrings
 groupadd docker -f
 usermod -aG docker $user
 
-sudo -u $user newgrp docker
+# sudo -u $user newgrp docker
 
 ## User will need to manually enter command after script completes:
 echo 'You will need to manually enter the command "newgrp docker" to complete docker configuration' >> /tmp/postactions.txt
