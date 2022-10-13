@@ -1,27 +1,38 @@
 # taphostprep-type1
 
-# Notes on this document
-for testv4 of this document, started on a fresh ubuntu host tempate
+The purpose of this document is to create a complete Full Profile installation for Tanzu Application Platform on a single VM. 
+
+The project is currently focused on a single environment topology, using a single, minimal ubuntu desktop VM to install kubernetes and TAP on a single host. The instructions and assets provided here should work on an ubuntu host with sufficient resources and performance, regardless of whether it is on bare metal or any virtualization platform, but the user may need to adjust some values for different environments. 
+
 
 # TAP 1.3 Single-node Lab Install Flow
 
 ## References:
-### [1] https://docs-staging.vmware.com/en/draft/VMware-Tanzu-Application-Platform/1.3
-### [2] https://tanzu.vmware.com/developer/guides/cert-manager-gs/
-### [3] https://tanzu.vmware.com/developer/guides/tanzu-application-platform-local-devloper-install/
-### [4] https://tanzu.vmware.com/developer/guides/harbor-gs/#set-up-dns
-### [5] https://github.com/afewell/scripts/
-### [6] https://tanzu.vmware.com/developer/blog/securely-connect-with-your-local-kubernetes-environment/
-### [7] https://thesecmaster.com/how-to-set-up-a-certificate-authority-on-ubuntu-using-openssl/
-### [8] https://computingforgeeks.com/install-and-configure-dnsmasq-on-ubuntu/
-### [9] https://goharbor.io/docs/2.6.0/install-config/configure-https/
+- [1] https://docs.vmware.com/en/VMware-Tanzu-Application-Platform/1.3
+- [2] https://tanzu.vmware.com/developer/guides/cert-manager-gs/
+- [3] https://tanzu.vmware.com/developer/guides/tanzu-application-platform-local-devloper-install/
+- [4] https://tanzu.vmware.com/developer/guides/harbor-gs/#set-up-dns
+- [5] https://github.com/afewell/scripts/
+- [6] https://tanzu.vmware.com/developer/blog/securely-connect-with-your-local-kubernetes-environment/
+- [7] https://thesecmaster.com/how-to-set-up-a-certificate-authority-on-ubuntu-using-openssl/
+- [8] https://computingforgeeks.com/install-and-configure-dnsmasq-on-ubuntu/
+- [9] https://goharbor.io/docs/2.6.0/install-config/configure-https/
 
 ## Install general Linux host prep with github.com/afewell/taphostprep-type1
+### Provision an Ubuntu host
+
+- In my initial tests I am using vCloud director to provision a VM (Running on vCenter) with the following specs:
+  - CPU's: 16 single core CPU's
+  - Memory: 64GB
+  - Storage: 200GB HDD
+  - OS: Ubuntu 20.04 Desktop (Minimal)
+- After provisioning the host I just went through the standard installation script with standard/minimum options defined
+
 ### Setup IP Address on Ubuntu Host
 
-- Manually set IP to the address provided in vcloud director 
+- Manually set an IP address on your VM so that the VM has internet access. This address does not necessarily need to be reachable from your desktop, but you will need some method to access the UI of the VM. 
 - `sudo nano /etc/netplan/01-network-manager-all.yaml`
-
+- Below is an example netplan file, you may need to adjust the values depending on your system:
 ```
 Enter text of netplan file here
 ```
