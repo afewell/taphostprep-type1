@@ -27,13 +27,7 @@ mkdir -p /etc/apt/keyrings
 ## Post install steps and sudoless for user https://docs.docker.com/engine/install/linux-postinstall/
 
 groupadd docker -f
-chgrp docker "$(which docker)"
-chmod g+s "$(which docker)"
-
-# 
-# usermod -aG docker $user
-
-# sudo -u $user newgrp docker
+usermod -aG docker "$user"
 
 ## User will need to manually enter command after script completes:
 echo 'You will need to manually enter the command "newgrp docker" to complete docker configuration' >> /tmp/postactions.txt
