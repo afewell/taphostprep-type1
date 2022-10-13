@@ -18,7 +18,7 @@ The project is currently focused on a single environment topology, using a singl
 - [8] https://computingforgeeks.com/install-and-configure-dnsmasq-on-ubuntu/
 - [9] https://goharbor.io/docs/2.6.0/install-config/configure-https/
 
-## Install general Linux host prep with github.com/afewell/taphostprep-type1
+## Linux Installation and Setup
 ### Provision an Ubuntu host
 
 - In my initial tests I am using vCloud director to provision a VM (Running on vCenter) with the following specs:
@@ -26,15 +26,30 @@ The project is currently focused on a single environment topology, using a singl
   - Memory: 64GB
   - Storage: 200GB HDD
   - OS: Ubuntu 20.04 Desktop (Minimal)
-- After provisioning the host I just went through the standard installation script with standard/minimum options defined
+- After provisioning the host I just went through the standard installation wizard with standard/minimum options defined
+- At this point I save a copy/template in my virtualization manager so when I need to provision a new VM I can load one up without needing to redo basic installation or maintain some other script to automate it, but I will probably make a cloudconfig later for provisioning systems that support that
 
 ### Setup IP Address on Ubuntu Host
 
+- Note: The need for this step may depend on your environment, you can use your preferred method to set an IP address, but be aware that if your host IP address changes, it may cause problems in the environment so its best if you use a method that ensures your VM/host gets the same IP address for its lifespan
 - Manually set an IP address on your VM so that the VM has internet access. This address does not necessarily need to be reachable from your desktop, but you will need some method to access the UI of the VM. 
 - `sudo nano /etc/netplan/01-network-manager-all.yaml`
 - Below is an example netplan file, you may need to adjust the values depending on your system:
 ```
-Enter text of netplan file here
+network:
+  version: 2
+  renderer: NetworkManager
+  ethernets:
+    ens160:
+      addresses:
+      - 10.10.10.10/24
+      nameservers:
+        addresses:
+        - 8.8.8.8
+        - 8.8.4.4
+      routes:
+        - to: 0.0.0.0/0
+          via: 10.10.10.253
 ```
 
 - `sudo netplan apply`
@@ -68,10 +83,6 @@ sudo /tmp/devhost.sh
 
 ```sh
 minikube start --kubernetes-version='1.23.10' --memory='48g' --cpus='12' --embed-certs --insecure-registry=192.168.49.0/24
-# wait for minikube to finish starting before executing the following command
-# minikube addons enable ingress
-# wait for minikube to finish enabling ingress before executing the following command
-# minikube addons enable ingress-dns
 ```
 
 ### Start Minikube tunnel
@@ -114,52 +125,20 @@ mv /etc/NetworkManager/NetworkManager.conf /etc/NetworkManager/NetworkManager.ol
 cp /tmp/NetworkManager.conf /etc/NetworkManager/NetworkManager.conf 
 ```
 
-<!-- ### Install Cert-Manager
-
-```sh
-kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.9.1/cert-manager.yaml
-``` -->
-
-<!-- ### Create a kubernetes secret with your CA certificates
-
-```sh
-kubectl create secret tls my-ca-secret --key /home/viadmin/.pki/myca/myca.key --cert /home/viadmin/.pki/myca/myca.pem -n cert-manager
-``` -->
-
-<!-- ### Create a cert-manager ClusterIssuer using your CA secret
-
-- create a file ca-issuer.yaml with the following text:
-```sh
-cat << EOF > ca-issuer.yaml
-apiVersion: cert-manager.io/v1
-kind: ClusterIssuer
-metadata:
-  name: ca-issuer
-spec:
-  ca:
-    secretName: my-ca-secret
-EOF
-# Create the ClusterIssuer with the following command
-kubectl apply -f ca-issuer.yaml
-# Verify the cluster issuer was created and is ready with the following command:
-kubectl get ClusterIssuer
-``` -->
-
-<!-- I did not install harbor in test 6, leaving this text commented for reference
 ### Install Harbor
 
 - `docker login` before proceeding as its on docker registry so you may exceed download limit if not logged in
-
+- In the current revision, you will need to create your own harbor values yaml file, with parameters set to use a loadBalancer and not use TLS. You will need to deploy harbor, allow minikube to assign a loadBalancer for harbor, then update the harbor values file and helm upgrade the deployment with the updated values. 
+- Detailed, step-by-step instructions will be added very soon.  
 ```sh
 # Gather the harbors.yml file
-wget -O harborvalues.yaml https://raw.githubusercontent.com/afewell/scripts/main/assets/tap/1_3/test_v3/resolv.conf
 # Add the harbor repo to helm
 helm repo add harbor https://helm.goharbor.io
 # create namespace for harbor
 kubectl create ns harbor
 # install harbor
 helm install harbor harbor/harbor -f harborvalues.yaml -n harbor
-``` -->
+```
 
 ### Install TAP
 
@@ -256,6 +235,33 @@ tanzu package repository add tbs-full-deps-repository \
   --url ${INSTALL_REGISTRY_HOSTNAME}/${INSTALL_REPO}/tbs-full-deps:$BSVersion \
   --namespace tap-install
 ```
+
+
+<!-- This is commented out as I plan to add cert-manager installation and setup in the future
+### Create a kubernetes secret with your CA certificates
+
+```sh
+kubectl create secret tls my-ca-secret --key /home/viadmin/.pki/myca/myca.key --cert /home/viadmin/.pki/myca/myca.pem -n cert-manager
+```
+
+### Create a cert-manager ClusterIssuer using your CA secret
+
+- create a file ca-issuer.yaml with the following text:
+```sh
+cat << EOF > ca-issuer.yaml
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: ca-issuer
+spec:
+  ca:
+    secretName: my-ca-secret
+EOF
+# Create the ClusterIssuer with the following command
+kubectl apply -f ca-issuer.yaml
+# Verify the cluster issuer was created and is ready with the following command:
+kubectl get ClusterIssuer
+``` -->
 
 
 
